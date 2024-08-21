@@ -1,0 +1,176 @@
+a {
+    color: darkgoldenrod;
+    text-decoration: none;
+    transition: color 1s;
+}
+
+
+
+nav{
+    display:flex;
+    height:12%;
+    position:absolute;
+    top:0;
+    width:100%;
+
+}
+
+table {
+    bottom: 45%;
+    font-family:Magneto;
+    width: 60%;
+    position: absolute;
+    
+    z-index: 1;
+}
+
+th{
+    color:red;
+
+}
+
+ 
+
+#container span:hover{
+    
+    color:yellow;
+    cursor:grab;
+    font-size:90%;
+}
+
+#container input[type=button] {
+    bottom: 10%;
+    position: absolute;
+}
+
+#dataValues{
+    font-size:70%;
+    position:absolute;
+    top:30%;
+    z-index:1;
+}
+
+#dataValues button{
+    background-color:darkred;
+    color:gold;
+    font-family:button;
+    width:30%;
+}
+
+#Scrivi{
+    bottom:1%;
+    position:absolute;
+}
+
+.advice {
+    background-color: maroon;
+    background-image: linear-gradient(to bottom right, darkred, red,orange );
+    border: 3px solid darkorange;
+    height: 15%;
+    font-size: 110%;
+    overflow: hidden;
+    width: 40%;
+}
+
+.advice:hover{
+    background-color:wheat;
+}
+
+
+.number{
+    background-color:red;
+}
+
+
+
+.request {
+   
+    background-image: linear-gradient(to bottom right, wheat, peru );
+    border: 3px solid red;
+    font-size: 140%;
+    height: 10%;
+    width: 40%;
+    z-index: 0;
+}
+
+    .request:hover {
+        background-image: linear-gradient(to bottom right,darkred, firebrick);
+        cursor: grabbing;
+    }
+
+.richieste {
+    background-color: peru;
+    background-image: linear-gradient(to bottom right, peru, orange);
+    display: flex;
+    flex-wrap: wrap;
+    height: 88%;
+    position: absolute;
+    top: 12%;
+    width: 100%;
+}
+
+    .richieste button {
+        background-color:darkred;
+        bottom:10%;
+        color:orange;
+        font-family:Magneto;
+        height:10%;
+        left: 40%;
+        position: absolute;
+        
+        width: 25%;
+    }
+
+    .richieste button:hover {
+        background-color: yellow;
+        cursor:grab;
+    }
+
+.sec{
+    background-color:darkred;
+    border:3px dashed;
+    border-color: orange;
+    color: darkorange;
+    flex-grow:1;
+   
+}
+
+.sec:hover{
+    background-color:yellow;
+   
+    cursor:grabbing;
+
+}
+
+    .sec a:hover {
+       color:firebrick;
+    }
+
+.text1{
+    color:darkgoldenrod;
+    font-family:Magneto;
+    font-size:80%;
+}
+
+.writing{
+    position:absolute;
+    top:15%;
+    z-index:1;
+}
+
+#container {
+   background-color:coral;
+    height: 100%;
+    width: 100%;
+}
+
+#testo_guida {
+    width: 75%;
+    
+}
+
+#titolo_guida {
+    margin: 10px;
+   
+}
+

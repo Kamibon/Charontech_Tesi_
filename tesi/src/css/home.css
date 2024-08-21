@@ -1,0 +1,418 @@
+a {
+    color: darkgoldenrod;
+    text-decoration: none;
+}
+
+button, input[type=button] {
+    background-color: darkred;
+    border-color: yellow;
+    border-radius: 5px;
+   
+    color: yellow;
+    font-family: Magneto;
+    transition:background-color 2s;
+}
+
+    button:hover, input[type=button]:hover {
+        background-color: orange;
+        cursor:grab;
+    }
+
+
+.chi {
+    background-color:orange;
+    background-image: linear-gradient(to bottom right, darkgoldenrod, orange, yellow);
+    height:100%;
+}
+
+.chi em{
+    bottom:45%;
+    position:absolute;
+    right:0%;
+}
+
+footer{
+    align-items:center;
+    background-color:crimson;
+    bottom:0;
+    display:flex;
+    font-family:Magneto;
+    height:10%;
+    justify-content:center;
+    position:absolute;
+    width:100%;
+}
+
+footer pre{
+    font-family:Magneto;
+}
+
+
+
+input[type=button]{
+    margin:5px;
+}
+
+pre div{
+    width:90%;
+}
+
+pre em{
+    color:red;
+    transition:color 2s;
+}
+
+pre em:hover{
+    color:orange;
+}
+
+span {
+    color: white;
+    font-size: 65%;
+    font-family:Magneto;
+}
+
+textarea{
+    height:20%;
+}
+
+#bar {
+    left:25%;
+    position: absolute;
+    top: 35%;
+    width: 60%;
+}
+
+#com_inv{
+    bottom:1.5%;
+    height:20%;
+    position:absolute;
+    
+    width:100%;
+}
+
+#com_inv button{
+    bottom:4%;
+    height:20%;
+    position:absolute;
+    width:40%;
+}
+
+#com_inv textarea{
+    height:80%;
+    
+
+}
+
+
+#com_section{
+    height:80%;
+}
+
+#domanda {
+    left: 5%;
+    font-size:80%;
+    position: absolute;
+    top: 35%;
+}
+
+#exparea{
+    height:8%;
+}
+
+#explanation{
+    height:8%;
+}
+
+#guida_dati {
+    background-color: darkgoldenrod;
+    background-image: linear-gradient(to bottom right, darkgoldenrod, orange, yellow);
+    border: 3px dashed orange;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    width: 20%;
+}
+
+#guida_dati #commentArea{
+    bottom:40%;
+    left:10%;
+    position:absolute;
+    width:80%;
+}
+
+#guida_dati input[type=button]{
+    background-color:darkred;
+    color: darkgoldenrod;
+    font-family:Magneto;
+
+}
+   
+#guida_dati input[type=button]:hover {
+        background-color: yellow;
+        color: darkgoldenrod;
+        cursor:grab;
+        font-family: Magneto;
+    }
+
+
+#homepage {
+   
+    height: 100%;
+    width: 100%;
+}
+
+#ind{
+    color:orange;
+    font-family:Magneto;
+    font-size:60%;
+    left:2%;
+    position:absolute;
+    top:1%;
+
+}
+
+#ind:hover{
+    color:red;
+    cursor:grab;
+}
+
+#int{
+    bottom:17%;
+    position:absolute;
+    left:20%;
+    
+    width:45%;
+
+}
+
+#int button{
+    background-color:darkred;
+    color:orange;
+    width:30%;
+
+}
+
+    #int button:hover {
+        background-color: yellow;
+        cursor:grab;
+    }
+
+#logo {
+    animation: App-logo-spin infinite 20s linear;
+    
+    position:absolute;
+    bottom:40%;
+    left:40%;
+    
+    width: 15%;
+    
+}
+
+#logout{
+    background-color:inherit;
+    border-color:transparent;
+}
+
+#menu {
+    bottom:0;
+    display: flex;
+    flex-direction:column;
+    height:100%;
+    left: 0;
+    position: absolute;
+    
+    width:15%;
+}
+
+#navhome {
+    align-items: center;
+    background-color: darkred;
+    display: flex;
+    height: 10%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+
+#spazio_guide {
+    display: flex;
+    flex-wrap: wrap;
+    left:15%;
+    position:absolute;
+    width:65%;
+    
+}
+
+.App-header{
+    height:100%;
+}
+
+.chi h1{
+    position:absolute;
+    right:45%;
+    top:5%;
+
+}
+
+.commento {
+    background-color: darkorange;
+    
+    border: 3px solid;
+    border-radius: 40px;
+    border-color: darkred;
+    color: red;
+    font-family: Magneto;
+    font-size: 40%;
+    margin: 2px;
+    overflow: hidden;
+    width: 90%;
+    word-break: break-word;
+}
+
+
+
+.commento:hover{
+    height:8%;
+    overflow:auto;
+}
+
+.commento em{
+    color:aqua;
+  
+}
+
+
+
+.guida {
+    border-color: tomato;
+    border: 3px solid;
+    box-shadow: 4px 15px 35px crimson ;
+    height: 130px;
+    margin: 1%;
+    overflow-wrap: break-word;
+    position: relative;
+    text-shadow: 2px 2px 5px red;
+    transition:height 0.6s;
+    width: 30%;
+    z-index:1;
+}
+    .guida:hover {
+       
+        border-color:red;
+        cursor:grabbing;
+        height:150px;
+        
+    }
+
+.guide{
+    font-family:'Bodoni MT';
+    position:absolute;
+    top:10%;
+}
+
+.interactions{
+    background-color:darkred;
+    bottom:0;
+    display:flex;
+    height:28%;
+    overflow:visible;
+    justify-content:center;
+    position:absolute;
+    width:100%;
+}
+
+
+.res{
+    flex-grow:1;
+
+}
+
+.response{
+    color:red;
+    
+    font-family:'Niagara Solid';
+    font-size:85%;
+   height:100%;
+    left:15%;
+    overflow:auto;
+    position:absolute;
+    top:2%;
+    width:65%;
+}
+
+.response:hover{
+    font-size:105%;
+}
+
+.sec {
+    align-items: center;
+    background-color: darkred;
+    border: 3px dashed;
+    border-color: orange;
+    box-shadow: 4px 3px 35px red;
+    color: darkorange;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    text-shadow: 1px 1px 4px orange;
+}
+
+.text {
+    background-image: linear-gradient(to bottom right, darkorange, orange, yellow, orange, darkorange);
+    bottom: 10%;
+    display: flex;
+    font-family: 'Perpetua Titling MT';
+    font-size: 1.5rem;
+    height: 80%;
+    position: absolute;
+    width: 100%;
+}
+
+.testo {
+    background-color: antiquewhite;
+    font-family: Magneto;
+    font-size: 80%;
+    height: 39%;
+    overflow: hidden;
+}
+
+.title{
+    font-family:'Bodoni MT';
+    font-size:110%;
+}
+
+.titolo {
+    background-color: firebrick;
+    color: white;
+    font-family:Magneto;
+    height: 42%;
+    overflow:hidden;
+    text-shadow: 2px 2px 5px gray;
+
+}
+
+
+@media(max-width:1000px) {
+   .chi em{
+       font-size:75%;
+
+   }
+
+   .sec{
+       font-size:60%;
+   }
+
+   #domanda{
+       font-size:56%;
+   }
+
+   .response{
+       font-size:80%;
+   }
+
+   footer{
+       bottom:-2%;
+   }
+}

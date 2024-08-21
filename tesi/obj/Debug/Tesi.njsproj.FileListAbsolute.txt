@@ -1,0 +1,3 @@
+C:\Users\Asus\Desktop\tesi\tesi\obj\Debug\Tesi.njsproj.AssemblyReference.cache
+C:\Users\Asus\Desktop\tesi\tesi\obj\Debug\Tesi.njsproj.CoreCompileInputs.cache
+C:\Users\Asus\Desktop\tesi\tesi\bin\Microsoft.NodejsTools.WebRole.dll
