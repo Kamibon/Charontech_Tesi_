@@ -1,5 +1,5 @@
 import { Configuration, OpenAIApi } from 'openai';
-const api = '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';
+const api = 'sk-chiaveapi';
 const configuration = new Configuration({
     apiKey: api,
 });
@@ -46,7 +46,7 @@ const explain = async (text, piece) => {
         const completion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: [{
-                role: "user", content: "Dato questo testo compreso tra underscore:_" + text + "_, rintraccia all interno di questo testo questa frase, compresa tra underscore:_" + piece +"_, fatto ciò voglio che mi crei una frase che spieghi meglio il significato della frase data, e allo stesso tempo sia perfettamente inseribile nel testo che ti ho dato. Voglio che tu restituisca solo la nuova frase  " 
+                role: "user", content: "Dato questo testo compreso tra underscore:_" + text + "_, rintraccia all interno di questo testo questa frase, compresa tra underscore:_" + piece +"_, fatto ciÃ² voglio che mi crei una frase che spieghi meglio il significato della frase data, e allo stesso tempo sia perfettamente inseribile nel testo che ti ho dato. Voglio che tu restituisca solo la nuova frase  " 
             }],
         });
         return (completion.data.choices[0].message);
