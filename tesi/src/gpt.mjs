@@ -1,5 +1,5 @@
 import { Configuration, OpenAIApi } from 'openai';
-const api = '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';
+const api = 'sk-apikey';
 const configuration = new Configuration({
     apiKey: api,
 });
@@ -42,7 +42,7 @@ const explain = async (content) => {
     try {
         const completion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content:"Mi riformuli in maniera più chiara questo testo:"+ content }],
+            messages: [{ role: "user", content:"Mi riformuli in maniera piÃ¹ chiara questo testo:"+ content }],
         });
         return (completion.data.choices[0].message);
     }
