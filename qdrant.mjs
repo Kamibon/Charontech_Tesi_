@@ -6,12 +6,12 @@ import { randomUUID } from 'crypto';
 const require = createRequire(import.meta.url);
 const uuid = require('uuid');
 
-const qdrant_key = 'ytUrMAOUBVAzo7Aa_tHI1Om6sZfPPgyFa40QjZqIBbyf10cOzOKAuQ';
-//const qdrant = new Qdrant("https://2f4d7776-487e-47e1-8299-e0e18bc491dd.us-east-1-0.aws.cloud.qdrant.io:6333");
+const qdrant_key = 'chiave_qdrant';
+
 
 const client = new QdrantClient({
     url: 'https://2f4d7776-487e-47e1-8299-e0e18bc491dd.us-east-1-0.aws.cloud.qdrant.io:6333',
-    apiKey: 'ytUrMAOUBVAzo7Aa_tHI1Om6sZfPPgyFa40QjZqIBbyf10cOzOKAuQ',
+    apiKey: qdrant_key,
 });
 
 // JavaScript source code
