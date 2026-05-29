@@ -1,7 +1,6 @@
 .App {
-    height:100vh;
+  height: 100vh;
   text-align: center;
- 
 }
 
 .App-logo {
@@ -30,29 +29,25 @@
   color: #61dafb;
 }
 
-
-
-.homepage{
-    background-color:darkorange;
-    height:100vh;
-    width:100%;
+.homepage {
+  background-color: darkorange;
+  height: 100vh;
+  width: 100%;
 }
 
 .signup {
-    background-color: orange;
-    height: 100vh;
-    width:100%;
+  background-color: orange;
+  height: 100vh;
+  width: 100%;
 }
-
-
 
 @keyframes App-logo-spin {
   from {
-      color:yellow;
+    color: yellow;
     transform: rotate(0deg);
   }
   to {
-      color:darkred;
+    color: darkred;
     transform: rotate(360deg);
   }
 }
