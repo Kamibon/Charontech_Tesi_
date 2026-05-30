@@ -1,13 +1,47 @@
-body {
-  margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply m-0 antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+      "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  }
+
+  a {
+    @apply text-dark-gold no-underline transition-colors duration-1000;
+  }
+
+  input {
+    @apply rounded hover:bg-orange-600;
+  }
+
+  span {
+    @apply text-white text-sm font-magneto;
+  }
+
+  textarea {
+    @apply border rounded p-2 focus:outline-none;
+  }
 }
 
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+@layer components {
+  .btn-primary {
+    @apply bg-burnt-red border-2 border-yellow-300 rounded px-4 py-2 text-yellow-300 font-magneto hover:bg-orange-500 cursor-grab transition-colors duration-500;
+  }
+
+  .gradient-primary {
+    @apply bg-gradient-to-br from-dark-gold via-orange-500 to-yellow-400;
+  }
+
+  .gradient-warn {
+    @apply bg-gradient-to-br from-orange-600 via-orange-500 to-yellow-300;
+  }
 }

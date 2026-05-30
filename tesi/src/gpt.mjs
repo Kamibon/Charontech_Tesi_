@@ -42,7 +42,7 @@ const explain = async (content) => {
     try {
         const completion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content:"Mi riformuli in maniera più chiara questo testo:"+ content }],
+            messages: [{ role: "user", content:"Mi riformuli in maniera piï¿½ chiara questo testo:"+ content }],
         });
         return (completion.data.choices[0].message);
     }
@@ -71,7 +71,6 @@ const create_image = async (inp) => {
             n: 1,
             size: "256x256",
         });
-        console.log(response.data.data[0].url)
         return(response.data.data[0].url)
     }
     catch (error) {
