@@ -1,16 +1,17 @@
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../css/signup.css";
 import { auth } from "../firebase.mjs";
 import { AccessLayout } from "./accessLayout";
+import { isEmail } from "../utils/utils.js";
 
 function WLogin() {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [error, setError] = useState("");
-  const [ok, setOk] = useState(false);
-
+  
+  const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4200/api";
   const navigate = useNavigate();
 
   const fields = [
@@ -29,9 +30,7 @@ function WLogin() {
 
   const login = async (event) => {
     if (
-      !/^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        String(loginEmail).toLowerCase(),
-      ) ||
+      !isEmail(loginEmail) ||
       loginPassword.length < 6
     ) {
       event.preventDefault();
@@ -42,7 +41,7 @@ function WLogin() {
     }
     event.preventDefault();
     const response = await fetch(
-      "http://localhost:4200/api/writers/data/" + loginEmail,
+      `${apiUrl}/writers/data/${loginEmail}`,
     );
     const { message } = await response.json();
     if (message.length === 0) {

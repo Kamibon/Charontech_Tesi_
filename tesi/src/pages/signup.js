@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../css/signup.css";
 import { AccessLayout } from "./accessLayout";
+import { isEmail } from "../utils/utils.js";
 
 function Signup() {
   const [username, setUsername] = useState("");
@@ -40,9 +41,7 @@ function Signup() {
       return;
     }
     if (
-      !/^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        String(registerEmail).toLowerCase(),
-      ) ||
+      !isEmail(registerEmail) ||
       registerPassword.length < 6
     ) {
       event.preventDefault();

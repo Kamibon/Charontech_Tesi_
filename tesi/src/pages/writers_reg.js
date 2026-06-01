@@ -4,10 +4,10 @@ import {
 } from "firebase/auth";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Input } from "../components/input";
 import "../css/signup.css";
 import { auth } from "../firebase.mjs";
 import { AccessLayout } from "./accessLayout";
+import { isEmail } from "../utils/utils.js";
 
 function Writersreg() {
   const [nome, setNome] = useState("");
@@ -17,6 +17,8 @@ function Writersreg() {
   const [registerPassword, setRegisterPassword] = useState("");
   const [error, setError] = useState("");
   const [logged, setLogged] = useState("");
+
+  const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4200/api";
 
   const fields = [
     {
@@ -51,7 +53,7 @@ function Writersreg() {
   function send_data() {
     const json = { nome, cognome, descrizione, loginEmail };
     const email = { loginEmail };
-    fetch("http://localhost:4200/api/writers/reg", {
+    fetch(`${apiUrl}/writers/reg`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(json),
@@ -61,15 +63,13 @@ function Writersreg() {
   }
 
   function check(event) {
-    if (nome === "" || cognome === "" || descrizione === "") {
+    if (!nome.trim() || !cognome.trim() || !descrizione.trim()) {
       event.preventDefault();
       setError("Inserisci tutti i dati");
       return;
     }
     if (
-      !/^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        String(loginEmail).toLowerCase(),
-      ) ||
+      !isEmail(loginEmail) ||
       registerPassword.length < 6
     ) {
       event.preventDefault();
