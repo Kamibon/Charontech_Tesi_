@@ -3,6 +3,7 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 import { useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import "../css/signup.css";
 import { auth } from "../firebase.mjs";
@@ -53,11 +54,7 @@ function Writersreg() {
   function send_data() {
     const json = { nome, cognome, descrizione, loginEmail };
     const email = { loginEmail };
-    fetch(`${apiUrl}/writers/reg`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    });
+    axios.post(`${apiUrl}/writers/reg`, json);
     localStorage.setItem("Email", JSON.stringify(email));
     dispatchEvent(new Event("login"));
   }
@@ -73,6 +70,7 @@ function Writersreg() {
       registerPassword.length < 6
     ) {
       event.preventDefault();
+      console.log(isEmail(loginEmail) + " " + registerPassword.length);
       setError(
         "Hai sbagliato ad inserire email o hai inserito una password con meno di 6 caratteri",
       );

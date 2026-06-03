@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
-import { embed } from "./gpt.mjs";
-import { add_user } from "./qdrant.mjs";
+import { embed } from "../../../gpt.mjs";
+import { add_user } from "../../../qdrant.mjs";
 import {
   addAuthors,
   addSuggest,
@@ -11,8 +11,9 @@ import {
   register,
   remove,
   updateAuthor,
-} from "./tesi/src/firebase.mjs";
-const writersRouter = require("express").Router("api/writers");
+} from "../firebase.mjs";
+import express from "express"
+const writersRouter = express.Router();
 
 const auth = getAuth(fb_app);
 

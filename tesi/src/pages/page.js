@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 import { Link, useNavigate } from "react-router-dom";
 import { Comment } from "../components/Comment.js";
@@ -41,8 +42,7 @@ function Home() {
 
     const handleNLogin = () => setExplanation("");
 
-    window.addEventListener("login", handleLogin);
-    window.addEventListener("nlogin", handleNLogin);
+    handleLogin();
 
     return () => {
       window.removeEventListener("login", handleLogin);
@@ -69,9 +69,8 @@ function Home() {
       return;
     }
 
-    fetch(`${apiUrl}/find/${query}`)
-      .then((response) => response.json())
-      .then((json) => setGuide(json.message))
+    axios.get(`${apiUrl}/find/${query}`)
+      .then((response) => setGuide(response.data.message))
       .finally(() => setLoading(false));
   };
 
@@ -87,21 +86,16 @@ function Home() {
       user,
     };
 
-    fetch(`${apiUrl}/moderate/${currentComment}`)
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.ris === false) {
+    axios.get(`${apiUrl}/moderate/${currentComment}`)
+      .then((response) => {
+        if (response.data.ris === false) {
           setData("Il tuo commento e' inappropriato e non verra' pubblicato!");
           setShowsComments(false);
           setClicked(false);
           return;
         }
 
-        fetch(`${apiUrl}/guides/comments`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }).then(() => showComments());
+        axios.post(`${apiUrl}/guides/comments`, payload).then(() => showComments());
       });
   };
 
@@ -114,22 +108,14 @@ function Home() {
       user: JSON.parse(normalEmail).username,
     };
 
-    fetch(`${apiUrl}/guides/like`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    });
+    axios.post(`${apiUrl}/guides/like`, json);
 
     setLiked("Piaciuto");
   };
 
   const addGuide = () => {
     const json = { titolo: query, testo: data, autore: "GPT" };
-    fetch(`${apiUrl}/guides/add`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    });
+    axios.post(`${apiUrl}/guides/add`, json);
 
     setData(
       "Abbiamo aggiunto questa guida al nostro database, grazie per il tuo contributo!",
@@ -145,11 +131,7 @@ function Home() {
       user: getUserName(),
     };
 
-    fetch(`${apiUrl}/writers/suggestions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    });
+    axios.post(`${apiUrl}/writers/suggestions`, json);
   };
 
   const getApi = () => {
@@ -169,10 +151,9 @@ function Home() {
       return;
     }
 
-    fetch(`${apiUrl}/moderate/${query}`)
-      .then((response) => response.json())
-      .then((json) => {
-        if (!json.ris) {
+    axios.get(`${apiUrl}/moderate/${query}`)
+      .then((response) => {
+        if (!response.data.ris) {
           setData(
             "La tua richiesta viola determinati parametri. Non e' stato possibile rispondere",
           );
@@ -192,20 +173,14 @@ function Home() {
       piece: `'${sentenceToExplain}'`,
     };
 
-    fetch(`${apiUrl}/explain`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    })
-      .then((response) => response.json())
-      .then((json) => setExplanation(json.message.content))
+    axios.post(`${apiUrl}/explain`, json)
+      .then((response) => setExplanation(response.data.message.content))
       .finally(() => setLoading(false));
   };
 
   const callGPT = () => {
-    fetch(`${apiUrl}/${query}`)
-      .then((response) => response.json())
-      .then((json) => setData(json.message.content))
+    axios.get(`${apiUrl}/${query}`)
+      .then((response) => setData(response.data.message.content))
       .finally(() => setLoading(false));
   };
 
@@ -233,7 +208,7 @@ function Home() {
   const removeLike = () => {
     if (!normalEmail) return;
 
-    fetch(
+    axios.get(
       `${apiUrl}/guides/like/remove/${JSON.parse(normalEmail).username}&${guideData}&${currentTitle}`,
     ).then(() => setLiked("Mi piace"));
   };
@@ -243,14 +218,13 @@ function Home() {
       "Abbiamo preso in carico la tua richiesta. Controlla nei prossimi giorni perche' qualcuno potrebbe aver scritto una guida a riguardo",
     );
     setLoading(false);
-    fetch(`${apiUrl}/requests/${query}`);
+    axios.get(`${apiUrl}/requests/${query}`);
   };
 
   const showComments = () => {
-    fetch(`${apiUrl}/guides/comment/${guideData}&${currentTitle}`)
-      .then((response) => response.json())
-      .then((json) => {
-        setComments(json.message);
+    axios.get(`${apiUrl}/guides/comment/${guideData}&${currentTitle}`)
+      .then((response) => {
+        setComments(response.data.message);
         setClicked(false);
         setShowsComments(true);
       });
@@ -269,12 +243,13 @@ function Home() {
   };
 
   const retrieveData = () => {
-    const loginEmail = JSON.parse(localStorage.getItem("Email")).loginEmail;
+    const loginEmail = JSON.parse(localStorage.getItem("Email"))?.loginEmail;
 
-    fetch(`${apiUrl}/writers/data/${loginEmail}`)
-      .then((response) => response.json())
-      .then((json) =>
-        localStorage.setItem("Dati", JSON.stringify(json.message[0])),
+    if(!loginEmail) return
+
+    axios.get(`${apiUrl}/writers/data/${loginEmail}`)
+      .then((response) =>
+        localStorage.setItem("Dati", JSON.stringify(response.data.message[0])),
       );
   };
 
@@ -401,12 +376,12 @@ function Home() {
   } else if (isWriter) {
     menu = (
       <aside id="menu">
-        <div className="sec">
+        <div onClick={log_out} className="sec">
           <Link to="/" onClick={log_out}>
             Logout
           </Link>
         </div>
-        <div className="sec">
+        <div onClick={() => navigate('/personal')} className="sec">
           <Link to="/personal"> Area personale</Link>
         </div>
       </aside>

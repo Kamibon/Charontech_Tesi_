@@ -1,5 +1,6 @@
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../css/signup.css";
 import { auth } from "../firebase.mjs";
@@ -40,10 +41,9 @@ function WLogin() {
       return;
     }
     event.preventDefault();
-    const response = await fetch(
+    const { data: { message } } = await axios.get(
       `${apiUrl}/writers/data/${loginEmail}`,
     );
-    const { message } = await response.json();
     if (message.length === 0) {
       setError(
         "Questa email non e' presente nel nostro database. Assicurati di averla scritta correttamente",

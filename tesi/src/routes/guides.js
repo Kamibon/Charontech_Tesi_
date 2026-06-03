@@ -1,7 +1,7 @@
-import { embed } from "./gpt.mjs";
+import { embed } from "../../../gpt.mjs";
 import {
     add_guide
-} from "./qdrant.mjs";
+} from "../../../qdrant.mjs";
 import {
     addComment,
     addGuide,
@@ -11,8 +11,9 @@ import {
     getLikes,
     removeLike,
     updateGuide
-} from "./tesi/src/firebase.mjs";
-const guidesRouter = require("express").Router('/api/guides');
+} from "../firebase.mjs";
+import express from "express"
+const guidesRouter = express.Router();
 
 guidesRouter.post("/add", (req, res) => {
   embed(req.body.testo).then((result) =>

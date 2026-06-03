@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 function Guide(props) {
   const [likes, setLikes] = useState([]);
@@ -9,9 +10,8 @@ function Guide(props) {
   const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4200/api";
 
   useEffect(() => {
-    fetch(`${apiUrl}/guides/like/${author}&${title}`)
-      .then((response) => response.json())
-      .then((json) => checkLikes(json))
+    axios.get(`${apiUrl}/guides/like/${author}&${title}`)
+      .then((response) => checkLikes(response.data))
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [author, title]);

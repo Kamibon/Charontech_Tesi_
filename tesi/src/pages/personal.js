@@ -1,8 +1,9 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 import { Advice } from "../components/advice.js";
-import { Guida, Guide } from "../components/Guida.js";
+import { Guide } from "../components/Guida.js";
 import { Request } from "../components/request.js";
 import "../css/personal.css";
 import { auth, changeEmail, logout } from "../firebase.mjs";
@@ -34,9 +35,9 @@ function Personal() {
     const writer = getWriterData();
     if (!writer.Descrizione) return;
 
-    fetch(`${apiUrl}/requests/${writer.Descrizione}`)
-      .then((response) => response.json())
-      .then((json) => setRequests(json.message))
+    axios
+      .get(`${apiUrl}/requests/${writer.Descrizione}`)
+      .then((response) => setRequests(response.data.message))
       .catch(() => {});
   };
 
@@ -44,9 +45,9 @@ function Personal() {
     const writer = getWriterData();
     if (!writer.Nome || !writer.Cognome) return;
 
-    fetch(`${apiUrl}/writers/suggestions/${writer.Nome}${writer.Cognome}`)
-      .then((response) => response.json())
-      .then((json) => setSuggestions(json.message))
+    axios
+      .get(`${apiUrl}/writers/suggestions/${writer.Nome}${writer.Cognome}`)
+      .then((response) => setSuggestions(response.data.message))
       .catch(() => {});
   };
 
@@ -54,9 +55,9 @@ function Personal() {
     const writer = getWriterData();
     if (!writer.Nome || !writer.Cognome) return;
 
-    fetch(`${apiUrl}/writers/guides/${writer.Nome}${writer.Cognome}`)
-      .then((response) => response.json())
-      .then((json) => setGuides(json.message))
+    axios
+      .get(`${apiUrl}/writers/guides/${writer.Nome}${writer.Cognome}`)
+      .then((response) => setGuides(response.data.message))
       .catch(() => {});
   };
 
@@ -135,21 +136,17 @@ function Personal() {
       autore: writer,
     };
 
-    fetch(`${apiUrl}/moderate/${title}${guideText}`)
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.ris === false) {
+    axios
+      .get(`${apiUrl}/moderate/${title}${guideText}`)
+      .then((response) => {
+        if (response.data.ris === false) {
           setMessage(
             "Il tuo testo contiene contenuto non conforme al nostro regolamento e non verra' caricato",
           );
           return null;
         }
 
-        return fetch(`${apiUrl}/guides/add`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        return axios.post(`${apiUrl}/guides/add`, payload);
       })
       .then(() => {
         loadGuides();
@@ -162,15 +159,12 @@ function Personal() {
     const writer = getWriterName();
     if (!writer) return;
 
-    fetch(`${apiUrl}/guides/update`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    axios
+      .post(`${apiUrl}/guides/update`, {
         autore: writer,
         testo: guideText,
         titolo: draftTitle,
-      }),
-    })
+      })
       .then(() => {
         setMessage("Vedrai aggiornata la tua guida al tuo prossimo ingresso");
         setGuideTitle("");
@@ -195,10 +189,10 @@ function Personal() {
       localStorage.setItem("Email", JSON.stringify({ loginEmail: valore }));
     }
 
-    fetch(`${apiUrl}/writers/data/update`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ loginEmail: writer.loginEmail, campo, valore }),
+    axios.post(`${apiUrl}/writers/data/update`, {
+      loginEmail: writer.loginEmail,
+      campo,
+      valore,
     });
 
     setMessage(
@@ -312,9 +306,9 @@ function Personal() {
     mainContent = guides.map((ric, index) => (
       <Guide
         key={index}
-        testo={ric.testo}
-        titolo={ric.titolo}
-        autore={ric.autore}
+        text={ric.testo}
+        title={ric.titolo}
+        author={ric.autore}
         onClick={startEditGuide}
       />
     ));
@@ -350,24 +344,30 @@ function Personal() {
         {actionSubmitButton}
       </div>
       <nav>
-        <div className="sec" onClick={showRequests}>
-          Richieste <span className="number">{requests.length}</span>
+        <div className="sec flex gap-3 items-center " onClick={showRequests}>
+          <span className="text-base">Richieste </span>
+          <span className="bg-red-600 rounded-full p-4 w-4 h-4 flex items-center justify-center">
+            {requests.length}
+          </span>
         </div>
-        <div className="sec" onClick={showSuggestions}>
-          Suggerimenti <span className="number">{suggestions.length}</span>
+        <div className="sec flex gap-3 items-center" onClick={showSuggestions}>
+          <span className="text-base">Suggerimenti</span>{" "}
+          <span className="bg-red-600 rounded-full p-4 w-4 h-4 flex items-center justify-center">
+            {suggestions.length}
+          </span>
         </div>
         <div className="sec" onClick={showGuides}>
-          Guide scritte
+           <span className="text-base">Guide scritte </span>
         </div>
         <div className="sec" onClick={showData}>
-          Dati personali
+           <span className="text-base">Dati personali </span>
         </div>
         <div className="sec">
-          <Link to="/">Home</Link>
+          <Link to="/">🏠︎</Link>
         </div>
         <div className="sec">
           <Link to="/" onClick={log_out}>
-            Logout
+            ➜
           </Link>
         </div>
       </nav>

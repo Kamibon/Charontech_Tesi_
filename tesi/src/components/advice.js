@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 
 function Advice(props) {
 
@@ -7,7 +8,7 @@ function Advice(props) {
    const { text, user, sub } = props;
 
   const removeAdvice = () => {
-    fetch(
+    axios.post(
       `${apiUrl}/writers/suggestions/remove/` +
         props.user +
         "&" +
