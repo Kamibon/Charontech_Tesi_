@@ -5,8 +5,7 @@ function Comment(props) {
     <div className="commento">
       <pre>
         <div>
-          {" "}
-          <em>{props.user}</em> : {props.testo}{" "}
+          <em>{props.user}</em> : {props.text}
         </div>
       </pre>
     </div>

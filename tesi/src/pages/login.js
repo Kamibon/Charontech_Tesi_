@@ -1,6 +1,6 @@
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { isEmail } from "../utils/utils.js";
 import "../css/signup.css";
 import { auth, fb_app, getUser } from "../firebase.mjs";
 import { AccessLayout } from "./accessLayout";
@@ -26,9 +26,7 @@ function Login() {
 
   const login = async (event) => {
     if (
-      !/^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        String(loginEmail).toLowerCase(),
-      ) ||
+      !isEmail(loginEmail) ||
       loginPassword.length < 6
     ) {
       console.log(error);

@@ -46,25 +46,14 @@ textarea {
   font-size: 80%;
 }
 
-#exparea {
-  height: 8%;
-}
-
-#explanation {
-  height: 8%;
-}
-
 #guida_dati {
-  background-color: darkgoldenrod;
   background-image: linear-gradient(
     to bottom right,
     darkgoldenrod,
     orange,
     yellow
   );
-  border: 3px dashed orange;
-  height: 100%;
-  width: 20%;
+ 
 }
 
 #guida_dati #commentArea {
@@ -107,8 +96,6 @@ textarea {
 
 #logo {
   animation: App-logo-spin infinite 20s linear;
-
-  width: 15%;
 }
 
 #logout {
@@ -133,12 +120,6 @@ textarea {
   padding-left: 5%;
   padding-right: 5%;
   width: 100%;
-}
-
-#spazio_guide {
-  display: flex;
-  flex-wrap: wrap;
-  width: 65%;
 }
 
 .App-header {
@@ -167,25 +148,6 @@ textarea {
 
 .commento em {
   color: aqua;
-}
-
-.guida {
-  border-color: tomato;
-  border: 3px solid;
-  box-shadow: 4px 15px 35px crimson;
-  height: 130px;
-  margin: 1%;
-  overflow-wrap: break-word;
-  position: relative;
-  text-shadow: 2px 2px 5px red;
-  transition: height 0.6s;
-  width: 30%;
-  z-index: 1;
-}
-.guida:hover {
-  border-color: red;
-  cursor: grabbing;
-  height: 150px;
 }
 
 .guide {

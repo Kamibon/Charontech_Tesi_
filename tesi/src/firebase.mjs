@@ -292,8 +292,8 @@ const updateAuthor = async (app, body) => {
     where("loginEmail", "==", body.loginEmail),
   );
   const querySnapshot = await getDocs(q);
-  querySnapshot.forEach(async (docu) => {
-    const id = docu.id;
+  querySnapshot.forEach(async (document) => {
+    const id = document.id;
     switch (body.campo) {
       case "email": {
         await updateDoc(doc(db, "autori", id), { loginEmail: body.valore });
@@ -359,5 +359,6 @@ export {
   remove,
   removeLike,
   updateAuthor,
-  updateGuide,
+  updateGuide
 };
+

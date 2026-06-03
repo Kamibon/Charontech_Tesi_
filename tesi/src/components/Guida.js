@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-function Guida(props) {
+function Guide(props) {
   const [likes, setLikes] = useState([]);
   const [liked, setLiked] = useState("Mi piace");
 
-  const {autore, titolo, testo, onClick} = props;
- 
+  const { author, title, text, onClick } = props;
+
+  const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4200/api";
+
   useEffect(() => {
-    fetch(
-      "http://localhost:4200/api/guides/like/get/" + autore + "&" + titolo,
-    )
-      .then((response) => response.json())
-      .then((json) => checkLikes(json))
+    axios.get(`${apiUrl}/guides/like/${author}&${title}`)
+      .then((response) => checkLikes(response.data))
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.autore, props.titolo]);
+  }, [author, title]);
 
   function checkLikes(json) {
     setLikes(json.message);
     if (json.message.length > 0) {
       for (let item of json.message) {
         if (localStorage.getItem("normalEmail") != null) {
-          if (item.user === JSON.parse(localStorage.getItem("normalEmail")).username) {
+          if (
+            item.user ===
+            JSON.parse(localStorage.getItem("normalEmail")).username
+          ) {
             setLiked("Piaciuto");
             break;
           }
@@ -32,24 +35,57 @@ function Guida(props) {
 
   return (
     <div
-      className="guida"
-      onClick={(event) => onClick(event)}
-      data-autore={autore}
-      data-titolo={titolo}
-      data-testo={testo}
+      className="
+    group
+    w-full max-w-md
+    cursor-pointer
+    overflow-hidden
+    rounded-2xl
+    border border-red-100
+    border-l-4 border-l-red-600
+    bg-white
+    max-h-[40%]
+    flex flex-col items-center
+    p-5
+    shadow-md
+    transition-all duration-300
+    hover:-translate-y-1
+    hover:shadow-xl
+    hover:border-red-300
+  "
+      onClick={onClick}
+      data-author={author}
+      data-title={title}
+      data-text={text}
       data-liked={liked}
     >
-      <div className="titolo">
-        {" "}
-        {titolo}
-        <br />
-      </div>
-      <div className="testo">{testo} </div>
-      <div className="interactions">
-        <span>Mi piace : {likes.length}</span>
+      <h3 className="mb-3 text-lg font-bold text-red-700 group-hover:text-red-600">
+        {title}
+      </h3>
+
+      <p className="text-sm leading-relaxed text-gray-600 line-clamp-3">
+        {text}
+      </p>
+
+      <div
+        className="
+      mt-4
+      flex
+      items-center
+      justify-between
+      border-t
+      border-gray-100
+      pt-3
+      text-sm
+      text-gray-500
+    "
+      >
+        <span className="font-medium">❤️ {likes.length}</span>
+
+        <span className="text-xs text-gray-400">{author}</span>
       </div>
     </div>
   );
 }
 
-export { Guida };
+export { Guide };

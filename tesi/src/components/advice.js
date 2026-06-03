@@ -1,9 +1,15 @@
 import React from "react";
+import axios from "axios";
 
 function Advice(props) {
+
+   const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4200/api";
+
+   const { text, user, sub } = props;
+
   const removeAdvice = () => {
-    fetch(
-      "http://localhost:4200/api/writers/suggestions/remove/" +
+    axios.post(
+      `${apiUrl}/writers/suggestions/remove/` +
         props.user +
         "&" +
         props.sub,
@@ -15,7 +21,7 @@ function Advice(props) {
     <div className="advice">
       <div className="text1">
         {" "}
-        L'utente {props.user} suggerisce di cambiare "{props.testo}" con "{props.sub}"
+        L'utente {user} suggerisce di cambiare "{text}" con "{sub}"
       </div>
       <input type="checkbox" onClick={removeAdvice}></input>
     </div>

@@ -1,28 +1,31 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-import logo from "../openai-logomark.png";
-import "../css/home.css";
 import { Link, useNavigate } from "react-router-dom";
-import { Guida } from "../components/Guida.js";
 import { Comment } from "../components/Comment.js";
+import { Guide } from "../components/Guida.js";
+import "../css/home.css";
 import { logout } from "../firebase.mjs";
+import logo from "../openai-logomark.png";
+
 function Home() {
   const [query, setQuery] = useState("");
   const [sentenceToExplain, setSentenceToExplain] = useState("");
   const [data, setData] = useState("");
-  const [loading, setLoading] = useState("none");
+  const [loading, setLoading] = useState(false);
   const [guide, setGuide] = useState([]);
-  const [block, setBlock] = useState(false);
   const [clicked, setClicked] = useState(false);
-  const [dati_guida, setDatiGuida] = useState("");
-  const [spiegazione, setSpiegazione] = useState("");
+  const [guideData, setGuideData] = useState("");
+  const [explanation, setExplanation] = useState("");
   const [currentTitle, setCurrentTitle] = useState("");
   const [showsComments, setShowsComments] = useState(false);
-  const [commenti, setCommenti] = useState([]);
+  const [comments, setComments] = useState([]);
   const [currentComment, setCurrentComment] = useState("");
   const [liked, setLiked] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4200/api";
 
   const menuItems = [
     { name: "Registrati", link: "/signup" },
@@ -32,112 +35,114 @@ function Home() {
   ];
 
   useEffect(() => {
-    function waitForEmail() {
+    const handleLogin = () => {
       retrieveData();
       setCurrentTitle("");
-    }
-
-    window.addEventListener("login", waitForEmail);
-    window.addEventListener("nlogin", () => setSpiegazione(""));
-    return () => {
-      window.removeEventListener("login", waitForEmail);
-      window.removeEventListener("nlogin", () => setSpiegazione(""));
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    const handleNLogin = () => setExplanation("");
+
+    handleLogin();
+
+    return () => {
+      window.removeEventListener("login", handleLogin);
+      window.removeEventListener("nlogin", handleNLogin);
+    };
   }, []);
 
-  function addComment() {
+  const normalEmail = localStorage.getItem("normalEmail");
+  const writerData = localStorage.getItem("Dati");
+  const isLogged = !!localStorage.getItem("Email");
+
+  const getUserName = () => {
+    if (normalEmail) return JSON.parse(normalEmail).username;
+    if (writerData) {
+      const writer = JSON.parse(writerData);
+      return `${writer.Nome}${writer.Cognome}`;
+    }
+    return "";
+  };
+
+  const getApi2 = (skipFetch) => {
+    if (skipFetch) {
+      setLoading(false);
+      return;
+    }
+
+    axios.get(`${apiUrl}/find/${query}`)
+      .then((response) => setGuide(response.data.message))
+      .finally(() => setLoading(false));
+  };
+
+  const addComment = () => {
     setShowsComments(true);
     setClicked(false);
-    let user;
-    if (localStorage.getItem("normalEmail") != null)
-      user = JSON.parse(localStorage.getItem("normalEmail")).username;
-    else
-      user =
-        JSON.parse(localStorage.getItem("Dati")).Nome +
-        JSON.parse(localStorage.getItem("Dati")).Cognome;
 
-    const com = {
+    const user = getUserName();
+    const payload = {
       testo: currentComment,
       titolo: currentTitle,
-      autore: dati_guida,
-      user: user,
+      autore: guideData,
+      user,
     };
 
-    fetch("http://localhost:4200/api/moderate/" + currentComment)
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.ris === false) {
+    axios.get(`${apiUrl}/moderate/${currentComment}`)
+      .then((response) => {
+        if (response.data.ris === false) {
           setData("Il tuo commento e' inappropriato e non verra' pubblicato!");
           setShowsComments(false);
           setClicked(false);
-        } else {
-          fetch("http://localhost:4200/api/guides/comments", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(com),
-          });
-          showComments();
+          return;
         }
-      });
-  }
 
-  function addLike() {
-    if (localStorage.getItem("normalEmail") == null) return;
+        axios.post(`${apiUrl}/guides/comments`, payload).then(() => showComments());
+      });
+  };
+
+  const addLike = () => {
+    if (!normalEmail) return;
 
     const json = {
       titolo: currentTitle,
-      autore: dati_guida,
-      user: JSON.parse(localStorage.getItem("normalEmail")).username,
+      autore: guideData,
+      user: JSON.parse(normalEmail).username,
     };
 
-    fetch("http://localhost:4200/api/guides/like", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    });
+    axios.post(`${apiUrl}/guides/like`, json);
 
     setLiked("Piaciuto");
-  }
+  };
 
-  function addGuide() {
+  const addGuide = () => {
     const json = { titolo: query, testo: data, autore: "GPT" };
-    fetch("http://localhost:4200/api/guides/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    }).then(() => {});
+    axios.post(`${apiUrl}/guides/add`, json);
+
     setData(
       "Abbiamo aggiunto questa guida al nostro database, grazie per il tuo contributo!",
     );
-    setLoading("none");
-  }
+    setLoading(false);
+  };
 
-  function addSuggestions() {
-    let us;
-    if (localStorage.getItem("Dati") !== null)
-      us =
-        JSON.parse(localStorage.getItem("Dati")).Nome +
-        JSON.parse(localStorage.getItem("Dati")).Cognome;
-    else us = JSON.parse(localStorage.getItem("normalEmail")).username;
+  const addSuggestions = () => {
+    const json = {
+      auth: guideData,
+      sub: explanation,
+      text: sentenceToExplain,
+      user: getUserName(),
+    };
 
-    const json = { auth: dati_guida, sub: spiegazione, text: sentenceToExplain, user: us };
+    axios.post(`${apiUrl}/writers/suggestions`, json);
+  };
 
-    fetch("http://localhost:4200/api/writers/suggestions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    });
-  }
-
-  function getApi() {
+  const getApi = () => {
     setLoading(true);
     setClicked(false);
-    setCommenti([]);
+    setComments([]);
     setShowsComments(false);
     setData("");
-    setSpiegazione("");
+    setExplanation("");
     setGuide([]);
+
     if (!query.startsWith("Come fare a")) {
       setData(
         "La tua ricerca non ha prodotto risultati. Verifica di aver inserito 'Come fare a' come prime parole ",
@@ -146,66 +151,49 @@ function Home() {
       return;
     }
 
-    fetch("http://localhost:4200/api/moderate/" + query)
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.ris === false) {
+    axios.get(`${apiUrl}/moderate/${query}`)
+      .then((response) => {
+        if (!response.data.ris) {
           setData(
             "La tua richiesta viola determinati parametri. Non e' stato possibile rispondere",
           );
-          setLoading(false);
-          setBlock(true);
-          getApi2();
-        } else getApi2();
-      });
-  }
+          getApi2(true);
+          return;
+        }
 
-  function getApi2() {
-    if (!block)
-      fetch("http://localhost:4200/api/find/" + query)
-        .then((response) => response.json())
-        .then((json) => {
-          setGuide(json.message);
-          setLoading("done");
-        });
-    setBlock(false);
-  }
+        getApi2(false);
+      })
+      .catch(() => setLoading(false));
+  };
 
-  function getExplanation() {
+  const getExplanation = () => {
     setLoading(true);
-    const json = { text: "'" + data + "'", piece: "'" + sentenceToExplain + "'" };
+    const json = {
+      text: `'${data}'`,
+      piece: `'${sentenceToExplain}'`,
+    };
 
-    fetch("http://localhost:4200/api/explain", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(json),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        setSpiegazione(json.message.content);
-        setLoading("done");
-      });
-  }
+    axios.post(`${apiUrl}/explain`, json)
+      .then((response) => setExplanation(response.data.message.content))
+      .finally(() => setLoading(false));
+  };
 
-  function callGPT() {
-    fetch("http://localhost:4200/api/" + query)
-      .then((response) => response.json())
-      .then((json) => {
-        setData(json.message.content);
-        setLoading("done");
-      });
-  }
+  const callGPT = () => {
+    axios.get(`${apiUrl}/${query}`)
+      .then((response) => setData(response.data.message.content))
+      .finally(() => setLoading(false));
+  };
 
-  function gptAnswer() {
+  const gptAnswer = () => {
     setGuide([]);
     setLoading(true);
     setData(
       "Stiamo sottoponendo la tua domanda a GPT, attendi qualche secondo...",
     );
     callGPT();
-  }
+  };
 
-  function log_out() {
+  const log_out = () => {
     logout();
     localStorage.removeItem("Dati");
     localStorage.removeItem("Email");
@@ -215,187 +203,165 @@ function Home() {
     setClicked(false);
     setShowsComments(false);
     setLoading(false);
-  }
+  };
 
-  function removeLike() {
-    fetch(
-      "http://localhost:4200/api/guides/like/remove/" +
-        JSON.parse(localStorage.getItem("normalEmail")).username +
-        "&" +
-        dati_guida +
-        "&" +
-        currentTitle,
+  const removeLike = () => {
+    if (!normalEmail) return;
+
+    axios.get(
+      `${apiUrl}/guides/like/remove/${JSON.parse(normalEmail).username}&${guideData}&${currentTitle}`,
     ).then(() => setLiked("Mi piace"));
-  }
+  };
 
-  function reqGuide() {
+  const reqGuide = () => {
     setData(
       "Abbiamo preso in carico la tua richiesta. Controlla nei prossimi giorni perche' qualcuno potrebbe aver scritto una guida a riguardo",
     );
     setLoading(false);
-    fetch("http://localhost:4200/api/requests/" + query);
-  }
+    axios.get(`${apiUrl}/requests/${query}`);
+  };
 
-  function showComments() {
-    fetch(
-      "http://localhost:4200/api/guides/comment/get/" +
-        dati_guida +
-        "&" +
-        currentTitle,
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        setCommenti(json.message);
+  const showComments = () => {
+    axios.get(`${apiUrl}/guides/comment/${guideData}&${currentTitle}`)
+      .then((response) => {
+        setComments(response.data.message);
         setClicked(false);
         setShowsComments(true);
       });
-  }
+  };
 
-  function showGuide(event) {
+  const showGuide = (event) => {
     setClicked(true);
-    setDatiGuida(event.currentTarget.dataset.autore);
+    setGuideData(event.currentTarget.dataset.autore);
     setCurrentTitle(event.currentTarget.dataset.titolo);
     setLiked(event.currentTarget.dataset.liked);
     setData(
-      event.currentTarget.dataset.titolo +
-        ":" +
-        event.currentTarget.dataset.testo,
+      `${event.currentTarget.dataset.titolo}:${event.currentTarget.dataset.testo}`,
     );
-    setLoading("none");
+    setLoading(false);
     setGuide([]);
-  }
+  };
 
-  function retrieveData() {
-    const loginEmail = JSON.parse(localStorage.getItem("Email")).loginEmail;
-    fetch("http://localhost:4200/api/writers/data/" + loginEmail)
-      .then((response) => response.json())
-      .then((json) =>
-        localStorage.setItem("Dati", JSON.stringify(json.message[0])),
+  const retrieveData = () => {
+    const loginEmail = JSON.parse(localStorage.getItem("Email"))?.loginEmail;
+
+    if(!loginEmail) return
+
+    axios.get(`${apiUrl}/writers/data/${loginEmail}`)
+      .then((response) =>
+        localStorage.setItem("Dati", JSON.stringify(response.data.message[0])),
       );
-  }
+  };
 
-  let dati;
-  let element;
-  let interactionPopup;
-  let like;
-  let comm;
+  const isNormalUser = !!normalEmail;
+  const isWriter = !!writerData;
 
-  if (
-    localStorage.getItem("normalEmail") !== null ||
-    localStorage.getItem("Dati") !== null
-  ) {
-    comm = (
-      <div id="com_inv">
-        <textarea
-          id="commentArea"
-          placeholder="Inserisci qui il tuo commento"
-          onChange={(event) => setCurrentComment(event.target.value)}
-        />
-        <button onClick={() => addComment()}>Invia</button>
+  const commentSection = (isNormalUser || isWriter) && (
+    <div id="com_inv">
+      <textarea
+        id="commentArea"
+        placeholder="Inserisci qui il tuo commento"
+        onChange={(event) => setCurrentComment(event.target.value)}
+      />
+      <button disabled={!currentComment.trim()} onClick={addComment}>
+        Invia
+      </button>
+    </div>
+  );
+
+  const likeButton = isNormalUser && (
+    <input
+      type="button"
+      value={liked === "Piaciuto" ? liked : "Mi piace"}
+      onClick={liked === "Piaciuto" ? removeLike : addLike}
+    />
+  );
+
+  const suggestionBlock = guideData !== "GPT" && (
+    <>
+      <span>
+        Vuoi suggerire all'autore di cambiare la parte di testo evidenziata con
+        quella che hai trovato tu?
+      </span>
+      <input
+        className="disabled:opacity-70"
+        disabled={!explanation.trim()}
+        type="button"
+        value="Si"
+        onClick={addSuggestions}
+      />
+    </>
+  );
+
+  const asideContent = clicked ? (
+    <aside
+      className="flex flex-col gap-2 px-3 py-2 border-dashed border-2 border-gray-400 rounded-lg"
+      id="guida_dati"
+    >
+      <div
+        id="ind"
+        onClick={() => {
+          getApi();
+          setClicked(false);
+        }}
+      >
+        Indietro
       </div>
-    );
-    if (localStorage.getItem("Dati") == null) {
-      if (liked === "Piaciuto")
-        like = (
-          <input
-            type="button"
-            value={liked}
-            onClick={() => removeLike()}
-          ></input>
-        );
-      else
-        like = (
-          <input type="button" value={liked} onClick={() => addLike()}></input>
-        );
-    }
-  }
-
-  let dom;
-  if (dati_guida !== "GPT")
-    dom = (
-      <>
-        <span>
-          Vuoi suggerire all'autore di cambiare la parte di testo evidenziata
-          con quella che hai trovato tu?
-        </span>{" "}
-        <br />
-        <input
-          type="button"
-          value="Si"
-          onClick={() => addSuggestions()}
-        ></input>
-      </>
-    );
-
-  if (clicked) {
-    dati = (
-      <aside id="guida_dati">
-        <div
-          id="ind"
-          onClick={() => {
-            getApi();
-            setClicked(false);
-          }}
-        >
-          Indietro
-        </div>
-        <pre>
-          <span>Autore: {dati_guida}</span>
-        </pre>
-        {like}
-        <input
-          type="button"
-          value="Visualizza i commenti"
-          onClick={(event) => showComments(event)}
-        ></input>{" "}
-        <br />
-        <textarea
-          id="expArea"
-          placeholder="Inserisci qui una parte di testo che non hai compreso"
-          onChange={(event) => setSentenceToExplain(event.target.value)}
-        ></textarea>
-        <br />
-        <input
-          type="button"
-          value="Invia"
-          onClick={() => getExplanation()}
-        ></input>
-        <br />
-        <textarea
-          id="explanation"
-          value={spiegazione}
-          readOnly
-          placeholder="Qui verra' visualizzata la spiegazione"
-        />
-        <br />
-        {dom}
-      </aside>
-    );
-  } else if (!clicked && showsComments) {
-    dati = (
-      <aside id="guida_dati">
-        <div
-          id="ind"
-          onClick={() => {
-            setClicked(true);
-            setShowsComments(false);
-          }}
-        >
-          Indietro
-        </div>
-        <br />
-        <div id="com_section">
-          {commenti.map((com, index) => (
-            <Comment key={index} user={com.user} testo={com.testo} />
-          ))}
-        </div>
-        {comm}
-      </aside>
-    );
-  }
+      <pre>
+        <span>Autore: {guideData}</span>
+      </pre>
+      {likeButton}
+      <input
+        className="px-3 py-2 text-sm bg-red-600 text-white rounded-lg cursor-pointer"
+        type="button"
+        value="Visualizza i commenti"
+        onClick={showComments}
+      />
+      <textarea
+        id="expArea"
+        className="w-full h-[30%] px-2 py-1 rounded-lg text-sm"
+        placeholder="Inserisci qui una parte di testo che non hai compreso"
+        onChange={(event) => setSentenceToExplain(event.target.value)}
+      />
+      <input
+        className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg cursor-pointer disabled:opacity-70"
+        type="button"
+        value="Invia"
+        onClick={getExplanation}
+        disabled={!sentenceToExplain.trim()}
+      />
+      <textarea
+        id="explanation"
+        className="w-full bg-gray-200 h-[30%] px-2 py-1 rounded-lg text-sm"
+        value={explanation}
+        disabled
+        readOnly
+        placeholder="Qui verra' visualizzata la spiegazione"
+      />
+      {suggestionBlock}
+    </aside>
+  ) : showsComments ? (
+    <aside id="guida_dati">
+      <div
+        id="ind"
+        onClick={() => {
+          setClicked(true);
+          setShowsComments(false);
+        }}
+      >
+        Indietro
+      </div>
+      <div id="com_section">
+        {comments.map((com, index) => (
+          <Comment key={index} user={com.user} text={com.testo} />
+        ))}
+      </div>
+      {commentSection}
+    </aside>
+  ) : null;
 
   let menu;
-  if (localStorage.getItem("Email") == null)
+  if (!isLogged) {
     menu = (
       <aside id="menu">
         {menuItems.map((item, index) => (
@@ -407,60 +373,59 @@ function Home() {
         ))}
       </aside>
     );
-  else if (localStorage.getItem("Dati") !== null)
+  } else if (isWriter) {
     menu = (
       <aside id="menu">
-        <div className="sec">
-          <Link to="/login">Accedi</Link>
-        </div>
-        <div className="sec">
-          <Link to="/wlogin">Accesso scrittori</Link>
-        </div>
-      </aside>
-    );
-  else if (localStorage.getItem("Dati") !== null)
-    menu = (
-      <aside id="menu">
-        <div className="sec">
-          <Link to="/" onClick={() => log_out()}>
+        <div onClick={log_out} className="sec">
+          <Link to="/" onClick={log_out}>
             Logout
           </Link>
         </div>
-        <div className="sec">
+        <div onClick={() => navigate('/personal')} className="sec">
           <Link to="/personal"> Area personale</Link>
         </div>
       </aside>
     );
-
-  if (localStorage.getItem("normalEmail") != null)
+  } else if (isNormalUser) {
     menu = (
       <aside id="menu">
         <div className="sec">
-          <Link to="/" onClick={() => log_out()}>
+          <Link to="/" onClick={log_out}>
             Logout
           </Link>
         </div>
       </aside>
     );
+  }
 
-  if (loading === true)
-    element = (
-      <img alt="" src={logo} id="logo" style={{ display: loading }}></img>
-    );
-  else if (loading === "done" && guide?.length !== 0) {
+  const loadingLogo = loading ? (
+    <img
+      alt="Loading answers..."
+      className="w-full h-[70%]"
+      src={logo}
+      id="logo"
+      style={{ display: loading ? "block" : "none" }}
+    />
+  ) : null;
+
+  let interactionPopup = null;
+  if (!loading && guide.length !== 0) {
     interactionPopup = (
       <div id="int">
-        {" "}
         <span>Hai trovato cio' che ti interessa?</span>
-        <button onClick={() => gptAnswer()}>No</button>
+        <button onClick={gptAnswer}>No</button>
       </div>
     );
-  } else if (loading === "done" && guide.length === 0 && !clicked) {
+  }
+
+  if (!loading && guide.length === 0 && !clicked && data) {
     interactionPopup = (
-      <div id="int">
-        <span>Questa risposta ti soddifa?</span>
-        <button onClick={() => addGuide()}>Si</button>
-        <button onClick={() => reqGuide()}>No</button>
+      <div id="interactionPopup" className="flex flex-col gap-2 items-center">
+        <span className="text-lg font-bold">Questa risposta ti soddifa?</span>
+        <div className="flex gap-3">
+          <button onClick={addGuide}>Si</button>
+          <button onClick={reqGuide}>No</button>
+        </div>
       </div>
     );
   }
@@ -469,7 +434,6 @@ function Home() {
     <div className="homepage flex flex-col h-screen">
       <nav id="navhome">
         <span className="text-base text-red-600 hidden sm:inline">
-          {" "}
           Carontech
         </span>
 
@@ -478,35 +442,46 @@ function Home() {
           id="bar"
           placeholder="Come fare a...?"
           onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") getApi();
+          }}
         />
         <label htmlFor="bar" />
 
         <label>
-          {" "}
-          <button onClick={() => getApi()}>🔍</button>
+          <button onClick={getApi}>🔍</button>
         </label>
       </nav>
       <section className="text flex">
         {menu}
-        {dati}
-        <div id="spazio_guide">
+        {asideContent}
+        <div
+          id="spazio_guide"
+          className=" grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 py-3 px-2"
+        >
           {guide.map((guida, index) => (
-            <Guida
+            <Guide
               key={index}
-              autore={guida.autore}
-              titolo={guida.titolo}
-              testo={guida.testo}
-              onClick={(event) => showGuide(event)}
+              author={guida.autore}
+              title={guida.titolo}
+              text={guida.testo}
+              onClick={showGuide}
             />
           ))}
+          <Guide
+            author="Autore"
+            title="Titolo"
+            text="Testo"
+            onClick={showGuide}
+          />
         </div>
+        {loadingLogo}
         <span className="response"> {data}</span>
       </section>
-      {element}
+
       {interactionPopup}
 
       <footer className="flex grow bg-red-700 items-center justify-center">
-        {" "}
         <Link to="/chi">Chi siamo</Link>
       </footer>
     </div>
